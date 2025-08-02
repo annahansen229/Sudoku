@@ -1,4 +1,4 @@
-import { getNewNotePad } from "@/utilities";
+import { getNewNotePad } from "../utilities";
 import { Digit, MaybeDigit } from "../types";
 
 /**
@@ -11,7 +11,7 @@ export type NotePad = [boolean, boolean, boolean, boolean, boolean, boolean, boo
  * A Cell has a value which may be given, else it is a guess, and a notepad
  */
 
-export class Cell {
+class Cell {
     #given: boolean;
     #value: MaybeDigit;
     #notepad: NotePad;
@@ -63,18 +63,14 @@ export class Cell {
      * Toggles note on/off
      */
     note(newNote:Digit) {
-        if (!this.given) {
-            this.#notepad[newNote - 1] = !this.#notepad[newNote - 1]
-        }
+        this.#notepad[newNote - 1] = !this.#notepad[newNote - 1]
     }
 
     /**
      * Removes note from notepad
      */
     removeNote(note:Digit){
-        if (!this.given) {
-            this.#notepad[note - 1] = false
-        }
+        this.#notepad[note - 1] = false
     }
 }
 
