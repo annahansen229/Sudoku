@@ -10,7 +10,7 @@ type Column = [Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell]
 /**
  * A Board is 9 rows of 9 columns
  */
-type Board = [Column, Column, Column, Column, Column, Column, Column, Column, Column]
+type Rows = [Column, Column, Column, Column, Column, Column, Column, Column, Column]
 
 /**
  * A location in a Sudoku board is a unique row, column pair
@@ -88,13 +88,39 @@ class Location {
     inSameColumn(otherLocation:Location): boolean {
         return this.#column == otherLocation.column
     }
+    
+    /**
+     * Returns whether this Location is in the same row, box, or column as otherLocation
+     * If this Location is the same as otherLocation, returns false
+     * @param otherLocation 
+     * @returns 
+     */
+    intersects(otherLocation:Location): boolean {
+        if (this.equals(otherLocation)) {
+            return false
+        } else {
+            return this.inSameColumn(otherLocation) || this.inSameColumn(otherLocation) || this.inSameBox(otherLocation)
+        }
+
+    }
+    
+    /**
+     * Returns whether this Location is is the same as otherLocation
+     * @param otherLocation 
+     * @returns 
+     */
+    equals(otherLocation:Location): boolean {
+        return this.inSameColumn(otherLocation) && this.inSameRow(otherLocation)
+    }
+
+    
 }
 
-class SudokuBoard {
-    #board: Board
+class Board {
+    #board: Rows
 
     constructor() {
-        this.#board = Array.from({length: 9}, () => Array.from({length: 9}, () => new Cell()) as Column) as Board
+        this.#board = Array.from({length: 9}, () => Array.from({length: 9}, () => new Cell()) as Column) as Rows
     }
 
     /**
@@ -131,18 +157,8 @@ class SudokuBoard {
         this.#board.forEach((row, r) => {
             row.forEach((cell, c) => {
                 const otherLocation = new Location(r + 1 as Digit, c + 1 as Digit)
-                if (location.inSameRow(otherLocation)) {
-                    if (location.inSameColumn(otherLocation)) {
-                        // self. Do nothing.
-                    } else {
-                        cell.removeNote(value)
-                    }
-                } else if (location.inSameColumn(otherLocation)) {
+                if (location.intersects(otherLocation)) {
                     cell.removeNote(value)
-                } else if (location.inSameBox(otherLocation)) {
-                    cell.removeNote(value)
-                } else {
-                    // not in same row, column, or box. Do nothing.
                 }
             })
         })
@@ -220,7 +236,7 @@ class SudokuBoard {
     }
 }
 
-export default SudokuBoard
+export default Board
 
-export {Location}
+export { Location }
 
